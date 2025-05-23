@@ -9,14 +9,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Search, MoreHorizontal, Mail, Phone, Calendar, Loader2 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { AddClientModal } from "@/components/add-client-modal"
+import { ScheduleMeetingModal } from "./schedule-meeting-modal"
 import { supabase, type Client } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 export function ClientsManagement() {
   const [searchTerm, setSearchTerm] = useState("")
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
+  const router = useRouter()
 
   const fetchClients = async () => {
     try {
@@ -62,6 +65,11 @@ export function ClientsManagement() {
       month: "short",
       day: "numeric",
     })
+  }
+
+  const handleMessageClient = (clientId: string) => {
+    // Use replace instead of push to avoid adding to history stack repeatedly
+    router.push(`/?tab=messages&clientId=${clientId}`)
   }
 
   return (
@@ -157,7 +165,7 @@ export function ClientsManagement() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>Edit Client</DropdownMenuItem>
                       <DropdownMenuItem>Schedule Meeting</DropdownMenuItem>
-                      <DropdownMenuItem>Send Message</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleMessageClient(client.id)}>Send Message</DropdownMenuItem>
                       <DropdownMenuItem className="text-red-600 dark:text-red-400">Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -195,12 +203,19 @@ export function ClientsManagement() {
                 )}
 
                 <div className="flex space-x-2 pt-1">
-                  <Button size="sm" className="flex-1 bg-blue-500 hover:bg-blue-600 text-white">
-                    Schedule
-                  </Button>
+                  <ScheduleMeetingModal
+                    selectedClientId={client.id}
+                    onMeetingScheduled={fetchClients}
+                    triggerButton={
+                      <Button size="sm" className="flex-1 bg-blue-500 hover:bg-blue-600 text-white">
+                        Schedule
+                      </Button>
+                    }
+                  />
                   <Button
                     size="sm"
                     variant="outline"
+                    onClick={() => handleMessageClient(client.id)}
                     className="flex-1 bg-white/50 dark:bg-gray-700/50 border-white/30 dark:border-gray-600/30"
                   >
                     Message

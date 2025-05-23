@@ -17,3 +17,38 @@ export type Client = {
   notes?: string
   avatar_url?: string
 }
+
+export type Meeting = {
+  id: string
+  title: string
+  description?: string
+  client_id: string
+  start_time: string
+  end_time: string
+  status: "scheduled" | "confirmed" | "completed" | "cancelled"
+  meeting_type?: string
+  location?: string
+  created_at: string
+  updated_at: string
+  clients?: Client
+}
+
+export type Conversation = {
+  id: string
+  client_id: string
+  last_message?: string
+  last_message_time: string
+  unread_count: number
+  created_at: string
+  updated_at: string
+  clients?: Client
+}
+
+export type Message = {
+  id: string
+  conversation_id: string
+  sender_type: "admin" | "client"
+  content: string
+  sent_at: string
+}
+

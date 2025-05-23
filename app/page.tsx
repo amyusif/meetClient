@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AdminSidebar } from "@/components/admin-sidebar"
 import { CalendarView } from "@/components/calendar-view"
 import { ClientsManagement } from "@/components/clients-management"
@@ -9,9 +9,18 @@ import { ProfilePanel } from "@/components/profile-panel"
 import { DashboardOverview } from "@/components/dashboard-overview"
 import { Topbar } from "@/components/topbar"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import { useSearchParams } from "next/navigation"
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard")
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const tab = searchParams.get("tab")
+    if (tab && ["dashboard", "calendar", "clients", "messages", "profile"].includes(tab)) {
+      setActiveTab(tab)
+    }
+  }, [searchParams]) // This is fine as searchParams is a stable reference
 
   const renderContent = () => {
     switch (activeTab) {
