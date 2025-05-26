@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSidebar } from "@/components/ui/sidebar"
+import { useAuth } from "@/lib/auth"
 
 interface TopbarProps {
   notificationCount: number
@@ -22,6 +23,11 @@ interface TopbarProps {
 
 export function Topbar({ notificationCount = 5 }: TopbarProps) {
   const { toggleSidebar } = useSidebar()
+  const { user, signOut } = useAuth()
+
+  const handleSignOut = async () => {
+    await signOut()
+  }
 
   return (
     <div className="fixed top-0 left-0 right-0 z-20 h-16 backdrop-blur-xl bg-white/30 dark:bg-gray-900/30 border-b border-white/20 dark:border-gray-700/20 shadow-sm">
@@ -113,7 +119,7 @@ export function Topbar({ notificationCount = 5 }: TopbarProps) {
                 <Avatar className="h-8 w-8 ring-2 ring-white/50 dark:ring-gray-700/50">
                   <AvatarImage src="/placeholder.svg?height=32&width=32" alt="@admin" />
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
-                    AD
+                    {user?.email?.charAt(0).toUpperCase() || "AD"}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -122,13 +128,20 @@ export function Topbar({ notificationCount = 5 }: TopbarProps) {
               align="end"
               className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-white/20 dark:border-gray-700/20"
             >
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">Admin User</p>
+                  <p className="text-xs leading-none text-muted-foreground">{user?.email || "admin@meetsync.com"}</p>
+                </div>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Billing</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600 dark:text-red-400">Log out</DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600 dark:text-red-400 cursor-pointer" onClick={handleSignOut}>
+                Log out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

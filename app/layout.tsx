@@ -4,13 +4,13 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/toaster"
+import { AuthProvider } from "@/lib/auth"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "MeetSync - Admin Dashboard",
-  description: "Admin meeting scheduler dashboard",
-    generator: 'v0.dev'
+  description: "Admin meeting scheduler dashboard with authentication",
 }
 
 export default function RootLayout({
@@ -22,8 +22,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-          <Toaster />
+          <AuthProvider>
+            {children}
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

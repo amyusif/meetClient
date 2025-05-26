@@ -7,20 +7,43 @@ import { ClientsManagement } from "@/components/clients-management"
 import { MessagesView } from "@/components/messages-view"
 import { ProfilePanel } from "@/components/profile-panel"
 import { DashboardOverview } from "@/components/dashboard-overview"
+import { LoginPage } from "@/components/login-page"
 import { Topbar } from "@/components/topbar"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { useSearchParams } from "next/navigation"
+import { useAuth } from "@/lib/auth"
+import { Loader2 } from "lucide-react"
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard")
   const searchParams = useSearchParams()
+  const { user, loading } = useAuth()
 
   useEffect(() => {
     const tab = searchParams.get("tab")
     if (tab && ["dashboard", "calendar", "clients", "messages", "profile"].includes(tab)) {
       setActiveTab(tab)
     }
-  }, [searchParams]) // This is fine as searchParams is a stable reference
+  }, [searchParams])
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <Loader2 className="w-8 h-8 text-white animate-spin" />
+          </div>
+          <p className="text-gray-600 dark:text-gray-400">Loading MeetSync...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show login page if user is not authenticated
+  if (!user) {
+    return <LoginPage />
+  }
 
   const renderContent = () => {
     switch (activeTab) {
